@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DontDrop - Student Retention System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #D7C0AE; /* Pastel brown */
+            --secondary-color: #FFDAB9; /* Pastel orange */
+            --accent-color: #E5C29F; /* Lighter pastel brown */
+            --light-color: #FFFBF5; /* Cream background */
+            --white: #FFFFFF;
+            --text-dark: #5D4037;
+            --text-light: #8D6E63;
+            --shadow-light: rgba(215, 192, 174, 0.15);
+            --shadow-medium: rgba(215, 192, 174, 0.25);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 var(--shadow-light);
+        }
+        
+        .glass-dark {
+            background: rgba(215, 192, 174, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(215, 192, 174, 0.2);
+            box-shadow: 0 8px 32px 0 var(--shadow-light);
+        }
+        
+        /* Login Page Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--light-color) 0%, var(--secondary-color) 100%);
+            padding: 20px;
+        }
+        
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px var(--shadow-medium);
+        }
+        
+        .login-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary-color);
+        }
+        
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            background: var(--white);
+            padding: 10px;
+        }
+        
+        .login-body {
+            padding: 40px 30px;
+            background: var(--white);
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: var(--glass);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            border-right: 1px solid rgba(215, 192, 174, 0.2);
+        }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--white);
+            padding: 5px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--glass-dark);
+            border-left-color: var(--primary-color);
+        }
+        
+        .sidebar-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+        
+        .topbar {
+            background: var(--glass);
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px var(--shadow-light);
+            margin-bottom: 25px;
+            overflow: hidden;
+            background: var(--glass);
+        }
+        
+        .card-header {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 18px 25px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+        }
+        
+        /* Profile Styles */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: var(--white);
+            padding: 50px 40px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 5px solid var(--white);
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px var(--shadow-medium);
+        }
+        
+        .profile-body {
+            padding: 40px;
+            background: var(--white);
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+            padding: 20px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-stat:hover {
+            background: var(--glass-dark);
+        }
+        
+        .profile-stat i {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+        
+        /* Gamification Styles */
+        .streak-container {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: var(--white);
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px var(--shadow-medium);
+        }
+        
+        .streak-number {
+            font-size: 3.5rem;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .badge-item {
+            background: var(--glass);
+            border: 2px solid var(--primary-color);
+            color: var(--text-dark);
+            border-radius: 50px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .badge-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow-light);
+        }
+        
+        .badge-item.gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: var(--white);
+            border: none;
+        }
+        
+        .badge-item.silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+            color: var(--white);
+            border: none;
+        }
+        
+        .badge-item.bronze {
+            background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+            color: var(--white);
+            border: none;
+        }
+        
+        /* Chart Styles */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 25px;
+        }
+        
+        /* Student List Styles */
+        .student-card {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--shadow-medium);
+        }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        
+        .student-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .risk-indicator {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .risk-low {
+            background: rgba(76, 175, 80, 0.15);
+            color: #2E7D32;
+        }
+        
+        .risk-medium {
+            background: rgba(255, 193, 7, 0.15);
+            color: #F57F17;
+        }
+        
+        .risk-high {
+            background: rgba(244, 67, 54, 0.15);
+            color: #C62828;
+        }
+        
+        /* Form Styles */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid rgba(215, 192, 174, 0.4);
+            padding: 14px 18px;
+            background: var(--glass);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(215, 192, 174, 0.25);
+        }
+        
+        .btn {
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-medium);
+        }
+        
+        /* Chatbot Styles */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--glass-dark);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .chat-message {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+        
+        .chat-bubble {
+            max-width: 70%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .chat-message.user .chat-bubble {
+            background: var(--primary-color);
+            color: var(--white);
+            border-bottom-right-radius: 5px;
+        }
+        
+        .chat-message.bot .chat-bubble {
+            background: var(--white);
+            border: 1px solid rgba(215, 192, 174, 0.3);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        /* Mobile Responsiveness */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            box-shadow: 0 5px 15px var(--shadow-medium);
+            z-index: 1001;
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Tooltip Styles */
+        .tooltip-custom {
+            position: absolute;
+            background: rgba(93, 64, 55, 0.9);
+            color: var(--white);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tooltip-custom.show {
+            opacity: 1;
+        }
+        
+        /* Table Styles */
+        .table {
+            color: var(--text-dark);
+        }
+        
+        .table thead th {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(215, 192, 174, 0.1);
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 16px 20px;
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #856404;
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+        }
+        
+        .modal-header {
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        /* Nav Tabs */
+        .nav-tabs {
+            border-bottom: 2px solid rgba(215, 192, 174, 0.3);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-light);
+            font-weight: 500;
+            border: none;
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            padding: 12px 20px;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-bottom-color: var(--primary-color);
+            color: var(--text-dark);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: transparent;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="C:\Users\ADMIN\Desktop\jejsus love us\image.png" alt="DontDrop Logo" class="login-logo">
+                <h2>DontDrop</h2>
+                <p class="mb-0">Student Retention System</p>
+            </div>
+            <div class="login-body">
+                <ul class="nav nav-tabs mb-4" id="loginTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="student-tab" data-bs-toggle="tab" data-bs-target="#student" type="button" role="tab">Student Login</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="faculty-tab" data-bs-toggle="tab" data-bs-target="#faculty" type="button" role="tab">Faculty Login</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="loginTabsContent">
+                    <!-- Student Login -->
+                    <div class="tab-pane fade show active" id="student" role="tabpanel">
+                        <form onsubmit="studentLogin(event)">
+                            <div class="mb-4">
+                                <label for="studentId" class="form-label">Student ID</label>
+                                <input type="text" class="form-control" id="studentId" placeholder="Enter your Student ID" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Login as Student</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Faculty Login -->
+                    <div class="tab-pane fade" id="faculty" role="tabpanel">
+                        <form onsubmit="facultyLogin(event)">
+                            <div class="mb-4">
+                                <label for="facultyName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="facultyName" placeholder="Enter your name" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="facultyPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="facultyPassword" placeholder="Enter your password" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Login as Faculty</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="dashboard-container" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="C:\Users\ADMIN\Desktop\jejsus love us\image.png" alt="Logo" class="sidebar-logo">
+                <h5 class="mb-0">DontDrop</h5>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item active" onclick="showStudentSection('home')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </div>
+                <div class="sidebar-item" onclick="showStudentSection('performance')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Performance</span>
+                </div>
+                <div class="sidebar-item" onclick="showStudentSection('fee')">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Fee Reminders</span>
+                </div>
+                <div class="sidebar-item" onclick="showStudentSection('counselling')">
+                    <i class="fas fa-comments"></i>
+                    <span>Counselling Bot</span>
+                </div>
+                <div class="sidebar-item" onclick="showStudentSection('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="sidebar-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div>
+                    <h4 class="mb-0">Welcome, <span id="studentName">Student</span></h4>
+                    <small class="text-muted">Last login: Today</small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-center">
+                        <div class="streak-number pulse">5</div>
+                        <small>Day Streak</small>
+                    </div>
+                    <img src="image copy.png" alt="Avatar" class="rounded-circle">
+                </div>
+            </div>
+            <!-- Home Section -->
+            <div id="studentHome" class="content-section">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="streak-container">
+                            <i class="fas fa-fire fa-3x mb-3"></i>
+                            <div class="streak-number">5</div>
+                            <p>Consecutive Days Studied</p>
+                            <button class="btn btn-light btn-sm mt-2" onclick="logStudy()">
+                                <i class="fas fa-plus me-1"></i> Log Study
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="text-primary">78%</h3>
+                                        <small class="text-muted">Attendance</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="text-success">72%</h3>
+                                        <small class="text-muted">Avg Score</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="text-warning">Medium</h3>
+                                        <small class="text-muted">Risk Level</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="text-info">3</h3>
+                                        <small class="text-muted">Subjects</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Recent Performance</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="performanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Achievements</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="badge-container">
+                                    <div class="badge-item gold">
+                                        <i class="fas fa-trophy"></i>
+                                        <span>Top Scorer</span>
+                                    </div>
+                                    <div class="badge-item silver">
+                                        <i class="fas fa-medal"></i>
+                                        <span>Perfect Attendance</span>
+                                    </div>
+                                    <div class="badge-item bronze">
+                                        <i class="fas fa-star"></i>
+                                        <span>Quick Learner</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Performance Section -->
+            <div id="studentPerformance" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Performance Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6>Series 1 Performance</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Score</th>
+                                                <th>Attendance</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>EST120</td>
+                                                <td>40</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>EST100</td>
+                                                <td>44</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>PHT100</td>
+                                                <td>48</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>MAT101</td>
+                                                <td>43</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>HUN101</td>
+                                                <td>40</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Series 2 Performance</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Score</th>
+                                                <th>Attendance</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>EST120</td>
+                                                <td>43</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>EST100</td>
+                                                <td>38</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>PHT100</td>
+                                                <td>43</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>MAT101</td>
+                                                <td>37</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-success">Pass</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>HUN101</td>
+                                                <td>24</td>
+                                                <td>100%</td>
+                                                <td><span class="badge bg-warning">Average</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Fee Section -->
+            <div id="studentFee" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Fee Reminders</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-triangle me-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Tuition Fee Due</h6>
+                                <p class="mb-0">Deadline: December 15, 2023</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Payment History</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2023-08-15</td>
+                                            <td>Tuition Fee</td>
+                                            <td>₹45,000</td>
+                                            <td><span class="badge bg-success">Paid</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-11-01</td>
+                                            <td>Exam Fee</td>
+                                            <td>₹5,000</td>
+                                            <td><span class="badge bg-success">Paid</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Counselling Section -->
+            <div id="studentCounselling" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Academic Counselling Assistant</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="chat-message bot">
+                                    <div class="chat-bubble">
+                                        Hello! I'm your academic counseling assistant. How can I help you today?
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" class="form-control" id="chatInput" placeholder="Type your message...">
+                                <button class="btn btn-primary" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Profile Section -->
+            <div id="studentProfile" class="content-section" style="display: none;">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <img src="image copy.png" alt="Profile" class="profile-avatar">
+                        <h3>Alex Johnson</h3>
+                        <p>Computer Science Engineering</p>
+                    </div>
+                    <div class="profile-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="profile-stat">
+                                    <i class="fas fa-id-card"></i>
+                                    <h6>Roll Number</h6>
+                                    <p>TL23BTCS0035</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="profile-stat">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <h6>Semester</h6>
+                                    <p>3rd Semester</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="profile-stat">
+                                    <i class="fas fa-percentage"></i>
+                                    <h6>Attendance</h6>
+                                    <p>78%</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h5 class="mt-4 mb-3">Academic Performance</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="profileChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Personal Information</h6>
+                                <p><strong>Email:</strong> alex.johnson@university.edu</p>
+                                <p><strong>Phone:</strong> +91 9876543210</p>
+                                <p><strong>Address:</strong> 123 Main Street, City</p>
+                                
+                                <h6 class="mt-3">Badges & Achievements</h6>
+                                <div class="badge-container">
+                                    <div class="badge-item gold">
+                                        <i class="fas fa-trophy"></i>
+                                        <span>Top Scorer</span>
+                                    </div>
+                                    <div class="badge-item silver">
+                                        <i class="fas fa-medal"></i>
+                                        <span>Perfect Attendance</span>
+                                    </div>
+                                    <div class="badge-item bronze">
+                                        <i class="fas fa-star"></i>
+                                        <span>Quick Learner</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Faculty Dashboard -->
+    <div id="facultyDashboard" class="dashboard-container" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="image.png" alt="Logo" class="sidebar-logo">
+                <h5 class="mb-0">DontDrop</h5>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item active" onclick="showFacultySection('overview')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </div>
+                <div class="sidebar-item" onclick="showFacultySection('students')">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </div>
+                <div class="sidebar-item" onclick="showFacultySection('analytics')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </div>
+                <div class="sidebar-item" onclick="showFacultySection('reminders')">
+                    <i class="fas fa-bell"></i>
+                    <span>Reminders</span>
+                </div>
+                <div class="sidebar-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div>
+                    <h4 class="mb-0">Faculty Dashboard</h4>
+                    <small class="text-muted">Welcome back, Dr. Smith</small>
+                </div>
+                <img src="C:\Users\ADMIN\Desktop\jejsus love us\image copy 2.png" alt="Avatar" class="rounded-circle">
+            </div>
+            <!-- Overview Section -->
+            <div id="facultyOverview" class="content-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                                <h3>42</h3>
+                                <p class="text-muted">Total Students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                                <h3>78%</h3>
+                                <p class="text-muted">Avg Attendance</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+                                <h3>8</h3>
+                                <p class="text-muted">At Risk</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-trophy fa-2x text-info mb-3"></i>
+                                <h3>5</h3>
+                                <p class="text-muted">Top Performers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Subject-wise Performance</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="subjectChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Risk Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="riskChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Students Section -->
+            <div id="facultyStudents" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Student Management</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                            <i class="fas fa-plus me-1"></i> Add Student
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Name</th>
+                                        <th>Avg Score</th>
+                                        <th>Attendance</th>
+                                        <th>Risk Level</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentTableBody">
+                                    <tr>
+                                        <td>TL23BTCS0035</td>
+                                        <td>Alex Johnson</td>
+                                        <td>78%</td>
+                                        <td>85%</td>
+                                        <td><span class="risk-indicator risk-low">Low</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('TL23BTCS0035')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="editMarks('TL23BTCS0035')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TL23BTCS0127</td>
+                                        <td>Sarah Williams</td>
+                                        <td>82%</td>
+                                        <td>92%</td>
+                                        <td><span class="risk-indicator risk-low">Low</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('TL23BTCS0127')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="editMarks('TL23BTCS0127')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TL23BTCS0256</td>
+                                        <td>Michael Brown</td>
+                                        <td>45%</td>
+                                        <td>65%</td>
+                                        <td><span class="risk-indicator risk-high">High</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('TL23BTCS0256')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="editMarks('TL23BTCS0256')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TL23BTCS0301</td>
+                                        <td>Emily Davis</td>
+                                        <td>75%</td>
+                                        <td>80%</td>
+                                        <td><span class="risk-indicator risk-medium">Medium</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('TL23BTCS0301')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="editMarks('TL23BTCS0301')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TL23BTCS0368</td>
+                                        <td>David Wilson</td>
+                                        <td>68%</td>
+                                        <td>75%</td>
+                                        <td><span class="risk-indicator risk-medium">Medium</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('TL23BTCS0368')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="editMarks('TL23BTCS0368')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Analytics Section -->
+            <div id="facultyAnalytics" class="content-section" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Attendance Trends</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="attendanceTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Score Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="scoreDistributionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Reminders Section -->
+            <div id="facultyReminders" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Fee Reminders</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addReminderModal">
+                            <i class="fas fa-plus me-1"></i> Add Reminder
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Message</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TL23BTCS0035</td>
+                                        <td>Alex Johnson</td>
+                                        <td>Tuition Fee Due</td>
+                                        <td>2023-12-15</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TL23BTCS0256</td>
+                                        <td>Michael Brown</td>
+                                        <td>Library Fine</td>
+                                        <td>2023-12-10</td>
+                                        <td><span class="badge bg-danger">Overdue</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="mb-3">
+                            <label for="rollNumber" class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" id="rollNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="studentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select class="form-select" id="semester" required>
+                                <option value="">Select Semester</option>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                                <option value="3">3rd Semester</option>
+                                <option value="4">4th Semester</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addStudent()">Add Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Reminder Modal -->
+    <div class="modal fade" id="addReminderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Fee Reminder</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addReminderForm">
+                        <div class="mb-3">
+                            <label for="reminderStudent" class="form-label">Student</label>
+                            <select class="form-select" id="reminderStudent" required>
+                                <option value="">Select Student</option>
+                                <option value="TL23BTCS0035">Alex Johnson</option>
+                                <option value="TL23BTCS0127">Sarah Williams</option>
+                                <option value="TL23BTCS0256">Michael Brown</option>
+                                <option value="TL23BTCS0301">Emily Davis</option>
+                                <option value="TL23BTCS0368">David Wilson</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reminderMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="reminderMessage" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reminderDeadline" class="form-label">Deadline</label>
+                            <input type="date" class="form-control" id="reminderDeadline" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addReminder()">Add Reminder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Marks Modal -->
+    <div class="modal fade" id="editMarksModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Student Marks</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMarksForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Series 1</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">EST120 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">EST100 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">PHT100 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">MAT101 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">HUN101 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Series 2</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">EST120 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">EST100 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">PHT100 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">MAT101 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">HUN101 Score</label>
+                                    <input type="number" class="form-control" min="0" max="50">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMarks()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data
+        const studentsData = {
+            'TL23BTCS0035': {
+                name: 'Alex Johnson',
+                semester: '3',
+                attendance: 85,
+                series1: {
+                    'EST120': { score: 40, attendance: 100 },
+                    'EST100': { score: 44, attendance: 100 },
+                    'PHT100': { score: 48, attendance: 100 },
+                    'MAT101': { score: 43, attendance: 100 },
+                    'HUN101': { score: 40, attendance: 100 }
+                },
+                series2: {
+                    'EST120': { score: 43, attendance: 100 },
+                    'EST100': { score: 38, attendance: 100 },
+                    'PHT100': { score: 43, attendance: 100 },
+                    'MAT101': { score: 37, attendance: 100 },
+                    'HUN101': { score: 24, attendance: 100 }
+                },
+                risk: 'low',
+                streak: 5
+            },
+            'TL23BTCS0127': {
+                name: 'Sarah Williams',
+                semester: '3',
+                attendance: 92,
+                series1: {
+                    'EST120': { score: 38, attendance: 100 },
+                    'EST100': { score: 36, attendance: 100 },
+                    'PHT100': { score: 43, attendance: 100 },
+                    'MAT101': { score: 41, attendance: 100 },
+                    'HUN101': { score: 35, attendance: 100 }
+                },
+                series2: {
+                    'EST120': { score: 33, attendance: 100 },
+                    'EST100': { score: 33, attendance: 100 },
+                    'PHT100': { score: 45, attendance: 100 },
+                    'MAT101': { score: 29, attendance: 100 },
+                    'HUN101': { score: 29, attendance: 100 }
+                },
+                risk: 'low',
+                streak: 3
+            },
+            'TL23BTCS0256': {
+                name: 'Michael Brown',
+                semester: '3',
+                attendance: 65,
+                series1: {
+                    'EST120': { score: 24, attendance: 77.78 },
+                    'EST100': { score: 25, attendance: 75 },
+                    'PHT100': { score: 10, attendance: 76.67 },
+                    'MAT101': { score: 22, attendance: 71.43 },
+                    'HUN101': { score: 16, attendance: 63.16 }
+                },
+                series2: {
+                    'EST120': { score: 15, attendance: 81.43 },
+                    'EST100': { score: 22, attendance: 69.12 },
+                    'PHT100': { score: 28, attendance: 83.82 },
+                    'MAT101': { score: 0, attendance: 76.36 },
+                    'HUN101': { score: 29, attendance: 76.32 }
+                },
+                risk: 'high',
+                streak: 0
+            },
+            'TL23BTCS0301': {
+                name: 'Emily Davis',
+                semester: '3',
+                attendance: 80,
+                series1: {
+                    'EST120': { score: 36, attendance: 100 },
+                    'EST100': { score: 23, attendance: 100 },
+                    'PHT100': { score: 41, attendance: 100 },
+                    'MAT101': { score: 20, attendance: 100 },
+                    'HUN101': { score: 30, attendance: 100 }
+                },
+                series2: {
+                    'EST120': { score: 28, attendance: 94.29 },
+                    'EST100': { score: 23, attendance: 98.53 },
+                    'PHT100': { score: 42, attendance: 95.59 },
+                    'MAT101': { score: 20, attendance: 96.36 },
+                    'HUN101': { score: 26, attendance: 97.37 }
+                },
+                risk: 'medium',
+                streak: 2
+            },
+            'TL23BTCS0368': {
+                name: 'David Wilson',
+                semester: '3',
+                attendance: 75,
+                series1: {
+                    'EST120': { score: 41, attendance: 100 },
+                    'EST100': { score: 8, attendance: 100 },
+                    'PHT100': { score: 35, attendance: 100 },
+                    'MAT101': { score: 20, attendance: 100 },
+                    'HUN101': { score: 33, attendance: 94.74 }
+                },
+                series2: {
+                    'EST120': { score: 0, attendance: 92.86 },
+                    'EST100': { score: 18, attendance: 89.71 },
+                    'PHT100': { score: 31, attendance: 92.65 },
+                    'MAT101': { score: 0, attendance: 83.64 },
+                    'HUN101': { score: 31, attendance: 89.47 }
+                },
+                risk: 'medium',
+                streak: 1
+            }
+        };
+        let currentUser = null;
+        let currentUserType = null;
+        // Login functions
+        function studentLogin(event) {
+            event.preventDefault();
+            const studentId = document.getElementById('studentId').value;
+            
+            if (studentsData[studentId]) {
+                currentUser = studentId;
+                currentUserType = 'student';
+                document.getElementById('studentName').textContent = studentsData[studentId].name;
+                showStudentDashboard();
+            } else {
+                showLoginError('Student ID not found');
+            }
+        }
+        function facultyLogin(event) {
+            event.preventDefault();
+            const name = document.getElementById('facultyName').value;
+            const password = document.getElementById('facultyPassword').value;
+            
+            if (name === 'faculty' && password === 'faculty123') {
+                currentUser = name;
+                currentUserType = 'faculty';
+                showFacultyDashboard();
+            } else {
+                showLoginError('Invalid faculty credentials');
+            }
+        }
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        function showStudentDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('studentDashboard').style.display = 'flex';
+            document.getElementById('facultyDashboard').style.display = 'none';
+            showStudentSection('home');
+        }
+        function showFacultyDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('studentDashboard').style.display = 'none';
+            document.getElementById('facultyDashboard').style.display = 'flex';
+            showFacultySection('overview');
+        }
+        function showStudentSection(section) {
+            // Hide all sections
+            document.querySelectorAll('#studentDashboard .content-section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById('student' + section.charAt(0).toUpperCase() + section.slice(1)).style.display = 'block';
+            
+            // Update sidebar active state
+            document.querySelectorAll('#studentDashboard .sidebar-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.sidebar-item').classList.add('active');
+            
+            // Initialize charts if needed
+            if (section === 'performance') {
+                initializePerformanceCharts();
+            } else if (section === 'profile') {
+                initializeProfileChart();
+            }
+        }
+        function showFacultySection(section) {
+            // Hide all sections
+            document.querySelectorAll('#facultyDashboard .content-section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById('faculty' + section.charAt(0).toUpperCase() + section.slice(1)).style.display = 'block';
+            
+            // Update sidebar active state
+            document.querySelectorAll('#facultyDashboard .sidebar-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.sidebar-item').classList.add('active');
+            
+            // Initialize charts if needed
+            if (section === 'overview') {
+                initializeFacultyCharts();
+            } else if (section === 'analytics') {
+                initializeAnalyticsCharts();
+            }
+        }
+        function initializePerformanceCharts() {
+            // Performance Chart
+            const ctx1 = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['EST120', 'EST100', 'PHT100', 'MAT101', 'HUN101'],
+                    datasets: [
+                        {
+                            label: 'Series 1',
+                            data: [40, 44, 48, 43, 40],
+                            borderColor: '#D7C0AE',
+                            backgroundColor: 'rgba(215, 192, 174, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Series 2',
+                            data: [43, 38, 43, 37, 24],
+                            borderColor: '#FFDAB9',
+                            backgroundColor: 'rgba(255, 218, 185, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' marks';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 50
+                        }
+                    }
+                }
+            });
+            // Comparison Chart
+            const ctx2 = document.getElementById('comparisonChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['EST120', 'EST100', 'PHT100', 'MAT101', 'HUN101'],
+                    datasets: [
+                        {
+                            label: 'Series 1',
+                            data: [40, 44, 48, 43, 40],
+                            backgroundColor: 'rgba(215, 192, 174, 0.7)'
+                        },
+                        {
+                            label: 'Series 2',
+                            data: [43, 38, 43, 37, 24],
+                            backgroundColor: 'rgba(255, 218, 185, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const change = context.parsed.y - (context.datasetIndex === 0 ? 
+                                        context.dataset.data[context.dataIndex - 1] : 
+                                        context.chart.data.datasets[0].data[context.dataIndex]);
+                                    const changeText = change > 0 ? ` (+${change})` : ` (${change})`;
+                                    return context.dataset.label + ': ' + context.parsed.y + ' ' + changeText;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 50
+                        }
+                    }
+                }
+            });
+        }
+        function initializeProfileChart() {
+            const ctx = document.getElementById('profileChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['EST120', 'EST100', 'PHT100', 'MAT101', 'HUN101'],
+                    datasets: [
+                        {
+                            label: 'Series 1',
+                            data: [40, 44, 48, 43, 40],
+                            borderColor: '#D7C0AE',
+                            backgroundColor: 'rgba(215, 192, 174, 0.2)'
+                        },
+                        {
+                            label: 'Series 2',
+                            data: [43, 38, 43, 37, 24],
+                            borderColor: '#FFDAB9',
+                            backgroundColor: 'rgba(255, 218, 185, 0.2)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 50
+                        }
+                    }
+                }
+            });
+        }
+        function initializeFacultyCharts() {
+            // Subject Chart
+            const ctx1 = document.getElementById('subjectChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['EST120', 'EST100', 'PHT100', 'MAT101', 'HUN101'],
+                    datasets: [{
+                        label: 'Average Score',
+                        data: [75, 70, 80, 65, 72],
+                        backgroundColor: [
+                            'rgba(215, 192, 174, 0.7)',
+                            'rgba(215, 192, 174, 0.7)',
+                            'rgba(215, 192, 174, 0.7)',
+                            'rgba(215, 192, 174, 0.7)',
+                            'rgba(215, 192, 174, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            // Risk Chart
+            const ctx2 = document.getElementById('riskChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                    datasets: [{
+                        data: [25, 12, 5],
+                        backgroundColor: [
+                            '#D7C0AE',
+                            '#FFDAB9',
+                            '#E5C29F'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+        function initializeAnalyticsCharts() {
+            // Attendance Trend Chart
+            const ctx1 = document.getElementById('attendanceTrendChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                    datasets: [{
+                        label: 'Average Attendance',
+                        data: [75, 78, 82, 80, 85],
+                        borderColor: '#FFDAB9',
+                        backgroundColor: 'rgba(255, 218, 185, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            // Score Distribution Chart
+            const ctx2 = document.getElementById('scoreDistributionChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [2, 5, 15, 12, 8],
+                        backgroundColor: [
+                            'rgba(229, 194, 159, 0.7)',
+                            'rgba(215, 192, 174, 0.7)',
+                            'rgba(255, 218, 185, 0.7)',
+                            'rgba(229, 194, 159, 0.7)',
+                            'rgba(215, 192, 174, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        function logStudy() {
+            const student = studentsData[currentUser];
+            student.streak += 1;
+            
+            // Update streak display
+            document.querySelectorAll('.streak-number').forEach(el => {
+                el.textContent = student.streak;
+            });
+            
+            alert('Study time logged! Your streak is now ' + student.streak + ' days.');
+        }
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user';
+                userMessage.innerHTML = `<div class="chat-bubble">${message}</div>`;
+                chatMessages.appendChild(userMessage);
+                
+                input.value = '';
+                
+                // Simulate bot response
+                setTimeout(() => {
+                    const responses = [
+                        "I understand your concern. Have you tried speaking with your professor about this?",
+                        "That's a good question. I recommend checking the university's academic resources.",
+                        "Many students face similar challenges. Consider forming a study group with your classmates.",
+                        "Time management is key. Try creating a study schedule and sticking to it.",
+                        "Don't hesitate to reach out to the counseling services available on campus."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'chat-message bot';
+                    botMessage.innerHTML = `<div class="chat-bubble">${randomResponse}</div>`;
+                    chatMessages.appendChild(botMessage);
+                    
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        function addStudent() {
+            const rollNumber = document.getElementById('rollNumber').value;
+            const name = document.getElementById('studentName').value;
+            const semester = document.getElementById('semester').value;
+            
+            if (rollNumber && name && semester) {
+                // Add to students data
+                studentsData[rollNumber] = {
+                    name: name,
+                    semester: semester,
+                    attendance: 0,
+                    series1: {
+                        'EST120': { score: 0, attendance: 0 },
+                        'EST100': { score: 0, attendance: 0 },
+                        'PHT100': { score: 0, attendance: 0 },
+                        'MAT101': { score: 0, attendance: 0 },
+                        'HUN101': { score: 0, attendance: 0 }
+                    },
+                    series2: {
+                        'EST120': { score: 0, attendance: 0 },
+                        'EST100': { score: 0, attendance: 0 },
+                        'PHT100': { score: 0, attendance: 0 },
+                        'MAT101': { score: 0, attendance: 0 },
+                        'HUN101': { score: 0, attendance: 0 }
+                    },
+                    risk: 'low',
+                    streak: 0
+                };
+                
+                // Add to table
+                const tableBody = document.getElementById('studentTableBody');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${rollNumber}</td>
+                    <td>${name}</td>
+                    <td>0%</td>
+                    <td>0%</td>
+                    <td><span class="risk-indicator risk-low">Low</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewStudent('${rollNumber}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="editMarks('${rollNumber}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+                
+                // Update select options
+                const reminderSelect = document.getElementById('reminderStudent');
+                const option = document.createElement('option');
+                option.value = rollNumber;
+                option.textContent = name;
+                reminderSelect.appendChild(option);
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+                modal.hide();
+                
+                // Reset form
+                document.getElementById('addStudentForm').reset();
+                
+                alert('Student added successfully!');
+            }
+        }
+        function addReminder() {
+            const student = document.getElementById('reminderStudent').value;
+            const message = document.getElementById('reminderMessage').value;
+            const deadline = document.getElementById('reminderDeadline').value;
+            
+            if (student && message && deadline) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addReminderModal'));
+                modal.hide();
+                
+                // Reset form
+                document.getElementById('addReminderForm').reset();
+                
+                alert('Fee reminder added successfully!');
+            }
+        }
+        function viewStudent(studentId) {
+            alert('Viewing student details for: ' + studentId);
+        }
+        function editMarks(studentId) {
+            // Open edit marks modal
+            const modal = new bootstrap.Modal(document.getElementById('editMarksModal'));
+            modal.show();
+        }
+        function saveMarks() {
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editMarksModal'));
+            modal.hide();
+            
+            alert('Marks saved successfully!');
+        }
+        function logout() {
+            currentUser = null;
+            currentUserType = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('studentDashboard').style.display = 'none';
+            document.getElementById('facultyDashboard').style.display = 'none';
+            
+            // Reset login forms
+            document.getElementById('studentId').value = '';
+            document.getElementById('facultyName').value = '';
+            document.getElementById('facultyPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize student home charts
+            const ctx = document.getElementById('performanceChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                        datasets: [{
+                            label: 'Average Score',
+                            data: [65, 68, 72, 70, 75],
+                            borderColor: '#D7C0AE',
+                            backgroundColor: 'rgba(215, 192, 174, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        // Allow sending chat message with Enter key
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
